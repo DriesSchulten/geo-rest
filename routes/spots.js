@@ -7,7 +7,6 @@ var Server = mongo.Server,
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 var db = new Db('c2db', server);
 
-var EarthEquatorialRadius = 6378100;
 
 db.open(function (err, db) {
   if (!err) {
@@ -31,7 +30,7 @@ exports.findAll = function (req, res) {
     location = location.split(',').map(function (num) {
       return parseFloat(num);
     });
-    query = {'location': {$geoWithin: {$centerSphere: [location, parseInt(radius) / EarthEquatorialRadius]}}};
+    query = {'location': {$near: {$geometry: {type: "Point", coordinates: location}, $maxDistance: parseInt(radius)}}};
   }
 
   db.collection('spots', function (err, collection) {
@@ -112,7 +111,7 @@ var fillDb = function () {
   }];
 
   db.collection('spots', function (err, collection) {
-    collection.createIndex('idx_location', {location: '2dsphere'});
+    collection.createIndex({location: '2dsphere'});
     collection.insert(spots, {safe: true}, function (err, result) {
     });
   });
