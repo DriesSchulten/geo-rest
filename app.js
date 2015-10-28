@@ -1,9 +1,11 @@
 var express = require('express'),
   bodyParser = require('body-parser'),
+  cors = require('cors'),
   spots = require('./routes/spots');
 var app = express();
 
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/', function (req, res) {
   res.send('REST main');
